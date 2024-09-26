@@ -1,0 +1,24 @@
+model World {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+
+    name        String 
+    description String?
+    image       String?
+    color       String @default("#000000")
+
+    sheetIds String[] @db.ObjectId
+    sheets    Sheet[] 
+
+    campaignIds String[] @db.ObjectId
+    campaigns Campaign[]
+
+    ownerId  String   @db.ObjectId 
+    usersIds String[] @db.ObjectId
+    users    User[]   @relation(fields: [usersIds], references: [id], name: "world_users")
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([name])
+}

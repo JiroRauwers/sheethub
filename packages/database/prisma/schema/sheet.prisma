@@ -1,0 +1,38 @@
+model Sheet {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+
+    name String
+
+    Worldid String @db.ObjectId
+    World   World  @relation(fields: [Worldid], references: [id])
+
+    CampaignIds String[]   @db.ObjectId
+    Campaigns   Campaign[] @relation(fields: [CampaignIds], references: [id], name: "campaign_sheets")
+
+    JsonData JsonData[]
+
+    UsersIds String[] @db.ObjectId
+    Users    User[]   @relation(fields: [UsersIds], references: [id], name: "sheet_users")
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([name])
+}
+
+model JsonData {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+
+    name String @default("New Update")
+
+    SheetId String @db.ObjectId
+    Sheet   Sheet  @relation(fields: [SheetId], references: [id])
+
+    createdAt DateTime  @default(now())
+    deletedAt DateTime?
+
+    data Json
+
+    @@index([createdAt])
+}
