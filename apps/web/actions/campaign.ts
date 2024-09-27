@@ -3,7 +3,7 @@
 import { auth } from "~/auth";
 import db from "~/lib/db";
 
-export async function CreateCampaign() {
+export async function createCampaign(name: string, description: string) {
   "use server";
   const session = await auth();
   const user = await db?.user.findUniqueOrThrow({
@@ -11,10 +11,24 @@ export async function CreateCampaign() {
   });
   if (!user || !user.currentWorldId) return;
 
+  let findCampaign = await db?.campaign.findFirst({
+    where: {
+      WorldId: user.currentWorldId,
+      name: {
+        equals: name,
+        mode: "insensitive",
+      },
+    },
+  });
+  console.log("findCampaign", findCampaign);
+  console.log("name", name);
+
+  if (findCampaign) throw new Error("Campaign already exists");
+
   const campaign = await db?.campaign.create({
     data: {
-      name: "New Campaign",
-      description: "Description of the new campaign",
+      name: name,
+      description: description,
       WorldId: user.currentWorldId,
     },
   });

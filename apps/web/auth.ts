@@ -1,13 +1,9 @@
 /* eslint-disable no-unused-vars */
-import NextAuth from "next-auth";
+import NextAuth, { User } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import db from "~/lib/db";
 import { authConfig } from "./lib/auth.config";
 import { Adapter } from "next-auth/adapters";
-
-import * as Auth_ from "~/node_modules/next-auth/lib";
-import * as Auth_Config from "~/node_modules/next-auth/lib/types";
-import * as AuthProviders from "~/node_modules/next-auth/providers";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -48,12 +44,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     async session({ session, token }) {
-      if (token) {
+      if (token?.user) {
         // set the token data to session
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        session.user.name = token.name as string;
-        session.user.image = token.image as string | undefined;
+        const user = token.user as User;
+        session.user.id = user.id as string;
+        session.user.email = user.email as string;
+        session.user.name = user.name as string;
+        session.user.image = user.image as string | undefined;
       }
 
       return session;

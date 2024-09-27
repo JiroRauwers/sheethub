@@ -12,6 +12,7 @@
     "@auth/prisma-adapter": "^2.5.2",
     "@sheet-hub/database": "workspace:*",
     "@sheet-hub/ui": "workspace:*",
+    "lucide-react": "^0.395.0",
     "next": "14.2.8",
     "next-auth": "5.0.0-beta.21",
     "next-themes": "^0.3.0",

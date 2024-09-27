@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import AppProviders from "./providers";
 import { cookies } from "next/headers";
 import "@sheet-hub/ui/globals.css";
+import { Toaster } from "@sheet-hub/ui/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Sheet Hub",
@@ -21,6 +22,7 @@ export default function RootLayout({
       </head>
       <body>
         <AppProviders sidebar_state={cookies().get("sidebar:state")?.value}>
+          <Toaster />
           {children}
         </AppProviders>
       </body>

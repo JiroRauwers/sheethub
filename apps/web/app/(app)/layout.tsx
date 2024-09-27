@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { AppSidebar } from "~/components/sidebar";
+import { Sidebar } from "~/components/sidebar/demo";
 import { socket } from "~/lib/socket";
 
 export default function RootLayout({
@@ -27,8 +28,7 @@ export default function RootLayout({
 
   return (
     <>
-      <AppSidebar />
-      {children}
+      <Sidebar>{children}</Sidebar>
     </>
   );
 }

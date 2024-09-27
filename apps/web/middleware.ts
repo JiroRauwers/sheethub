@@ -1,20 +1,14 @@
+import { NextResponse } from "next/server";
+import { API_AUTH_PREFIX, AUTH_ROUTES, PROTECTED_ROUTES } from "~/routes";
+import { auth } from "./auth";
+import { authConfig } from "./lib/auth.config";
 import NextAuth from "next-auth";
 
-// eslint-disable-next-line no-unused-vars
-import * as Auth_ from "~/node_modules/next-auth/lib";
-// eslint-disable-next-line no-unused-vars
-import * as Auth_Config from "~/node_modules/next-auth/lib/types";
-// eslint-disable-next-line no-unused-vars
-import * as AuthProviders from "~/node_modules/next-auth/providers";
+const nextAuth = NextAuth({
+  ...authConfig,
+});
 
-import { NextResponse } from "next/server";
-
-import { authConfig } from "~/lib/auth.config";
-import { API_AUTH_PREFIX, AUTH_ROUTES, PROTECTED_ROUTES } from "~/routes";
-
-export const { auth } = NextAuth(authConfig);
-
-export default auth((req) => {
+export default nextAuth.auth((req) => {
   const pathname = req.nextUrl.pathname;
 
   // manage route protection
