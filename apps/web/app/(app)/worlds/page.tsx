@@ -9,14 +9,18 @@ import {
 import { Separator } from "@sheet-hub/ui/components/ui/separator";
 import Image from "next/image";
 import Link from "next/link";
-import { LoadWorlds } from "~/actions/world";
+import { loadWorlds } from "~/actions/world";
+import { CreateWorld } from "~/components/createWorld";
 
 export default async function WorldsPage() {
-  const worlds = await LoadWorlds();
+  const worlds = await loadWorlds();
 
   return (
     <div className="flex flex-col gap-4 p-4 w-full">
-      <h1 className="text-2xl font-bold">Worlds</h1>
+      <div className="flex justify-between">
+        <h1 className="text-2xl font-bold">Worlds</h1>
+        <CreateWorld />
+      </div>
       <div className="flex flex-wrap justify-evenly gap-4">
         {worlds.map((world) => (
           <WorldCard key={world.id} {...{ world }} />

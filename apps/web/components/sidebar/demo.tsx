@@ -144,7 +144,7 @@ export const Sidebar: React.FC<React.PropsWithChildren> = ({ children }) => {
             </li>
             <li className="rounded-sm">
               <Button
-                onClick={logout}
+                onClick={() => logout()}
                 className="flex items-center p-2 space-x-3 rounded-md"
               >
                 <svg

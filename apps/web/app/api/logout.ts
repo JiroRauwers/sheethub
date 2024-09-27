@@ -3,5 +3,5 @@ import { signOut } from "~/auth";
 
 export async function logout() {
   "use server";
-  return signOut();
+  return await signOut();
 }

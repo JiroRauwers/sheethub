@@ -1,10 +1,9 @@
-import { CreateWorld, LoadWorlds } from "~/actions/world";
+import { getWorldByName, loadWorlds, selectWorld } from "~/actions/world";
 import { notFound } from "next/navigation";
-import { Campaign, Sheet } from "@sheet-hub/database";
+import { Campaign, Sheet, World } from "@sheet-hub/database";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  Button,
   Separator,
   Card,
   CardHeader,
@@ -16,29 +15,25 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-  DialogFooter,
 } from "@sheet-hub/ui/components";
 
-import { PageProps } from "~/.next/types/app/(app)/worlds/[world_id]/page";
-import { XIcon } from "lucide-react";
 import { CreateCampaign } from "~/components/createCampaign";
+import { PageProps } from "~/.next/types/app/(app)/worlds/[world]/page";
 
 export default async function WorldPage(props: PageProps) {
-  const [world] = await LoadWorlds([props.params.world_id], {
+  const [world] = await loadWorlds([props.params.world], {
     campaigns: true,
     sheets: true,
     users: true,
   });
-
-  if (!world) {
+  try {
+    await selectWorld(props.params.world);
+  } catch (error) {
+    console.error(error);
     return notFound();
   }
+
+  if (!world) return notFound();
 
   return (
     <div className="flex flex-col gap-4 p-4 w-full">

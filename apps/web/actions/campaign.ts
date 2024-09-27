@@ -1,5 +1,7 @@
 "use server";
 
+import { Prisma } from "@sheet-hub/database";
+import assert from "assert";
 import { auth } from "~/auth";
 import db from "~/lib/db";
 
@@ -20,8 +22,6 @@ export async function createCampaign(name: string, description: string) {
       },
     },
   });
-  console.log("findCampaign", findCampaign);
-  console.log("name", name);
 
   if (findCampaign) throw new Error("Campaign already exists");
 
@@ -36,4 +36,44 @@ export async function createCampaign(name: string, description: string) {
   if (!campaign) throw new Error("Failed to create campaign");
 
   return campaign;
+}
+
+export async function loadCampaigns(
+  ids?: string[],
+  include: Prisma.CampaignInclude = {},
+) {
+  "use server";
+  const session = await auth();
+  assert(session?.user?.id, "Session not found");
+
+  const campaigns = await db?.campaign.findMany({
+    include,
+    where: {
+      // the user is in the campaign or the world owner
+      OR: [
+        {
+          Sheet: {
+            some: {
+              Users: {
+                some: {
+                  id: session.user.id,
+                },
+              },
+            },
+          },
+        },
+        {
+          World: {
+            ownerId: session.user.id,
+          },
+        },
+      ],
+      ...(ids ? { id: { in: ids } } : {}),
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+  assert(campaigns, "Failed to load campaigns");
+  return campaigns;
 }

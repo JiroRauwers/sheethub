@@ -4,22 +4,47 @@ import { DBExclusive } from "./_help";
 import { auth } from "~/auth";
 import assert from "assert";
 import db from "~/lib/db";
-import { Prisma, World } from "@sheet-hub/database";
+import { Prisma } from "@sheet-hub/database";
 
-type WorldData = Omit<
-  Pick<World, "name"> | Partial<World>,
-  DBExclusive | "ownerId"
->;
-export async function CreateWorld(
-  worldData: Omit<Prisma.WorldCreateInput, DBExclusive | "ownerId"> &
-    Partial<Prisma.WorldCreateInput>,
+export async function selectWorld(worldId: string) {
+  "use server";
+  const session = await auth();
+  assert(session?.user?.id, "Session not found");
+
+  const world = await db?.world.findUnique({
+    where: {
+      id: worldId,
+      users: {
+        some: {
+          id: session.user.id,
+        },
+      },
+    },
+  });
+  if (!world) throw new Error("World not found");
+
+  await db?.user.update({
+    where: {
+      id: session.user.id,
+    },
+    data: {
+      currentWorldId: world.id,
+    },
+  });
+  return world;
+}
+
+export async function createWorld(
+  worldData: Omit<Prisma.WorldCreateInput, "ownerId" | DBExclusive> & {
+    ownerId?: string;
+  },
 ) {
   "use server";
   const session = await auth();
   assert(session?.user?.id, "Session not found");
   const world = await db?.world.create({
     data: {
-      ...(worldData as Prisma.WorldCreateInput),
+      ...worldData,
       ownerId: worldData.ownerId ?? session?.user?.id,
       users: {
         ...worldData.users,
@@ -34,7 +59,7 @@ export async function CreateWorld(
   return world;
 }
 
-export async function LoadWorlds(
+export async function loadWorlds(
   ids?: string[],
   options: Prisma.WorldInclude = {},
 ) {
@@ -59,4 +84,26 @@ export async function LoadWorlds(
   });
   assert(userWorlds, "Something Went Wrong Loading Worlds");
   return userWorlds;
+}
+
+export async function getWorldByName(
+  name: string,
+  include: Prisma.WorldInclude = {},
+) {
+  "use server";
+  const session = await auth();
+  assert(session?.user?.id, "Session not found");
+
+  const world = await db?.world.findFirstOrThrow({
+    where: {
+      name,
+      users: {
+        some: {
+          id: session.user?.id!,
+        },
+      },
+    },
+    include,
+  });
+  return world;
 }
