@@ -1,4 +1,5 @@
-import { SignOut } from "../signout";
+import { Button } from "@sheet-hub/ui/components";
+import { logout } from "~/app/api/logout";
 
 export const AppSidebar = () => {
   return (
@@ -8,7 +9,7 @@ export const AppSidebar = () => {
           <div className="p-2">Sidebar</div>
         </div>
         <div className="mt-auto">
-          <SignOut />
+          <Button onClick={logout}>Logout</Button>
         </div>
       </div>
     </aside>

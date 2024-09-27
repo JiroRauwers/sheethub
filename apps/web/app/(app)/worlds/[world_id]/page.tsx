@@ -28,6 +28,7 @@ import {
 import { PageProps } from "~/.next/types/app/(app)/worlds/[world_id]/page";
 import { XIcon } from "lucide-react";
 import { CreateCampaign } from "~/components/createCampaign";
+
 export default async function WorldPage(props: PageProps) {
   const [world] = await LoadWorlds([props.params.world_id], {
     campaigns: true,
@@ -58,7 +59,7 @@ export default async function WorldPage(props: PageProps) {
       <div className="flex flex-col gap-4">
         <div className="flex justify-between">
           <h2 className="text-4xl font-bold">Campaigns</h2>
-          <CreateCampaign />
+          <CreateCampaign worldId={world.id} />
         </div>
         <div className="flex flex-wrap justify-evenly gap-4">
           {world.campaigns.map((campaign) => (

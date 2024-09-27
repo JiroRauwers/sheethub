@@ -10,16 +10,21 @@ type WorldData = Omit<
   Pick<World, "name"> | Partial<World>,
   DBExclusive | "ownerId"
 >;
-export async function CreateWorld(worldData: WorldData) {
+export async function CreateWorld(
+  worldData: Omit<Prisma.WorldCreateInput, DBExclusive | "ownerId"> &
+    Partial<Prisma.WorldCreateInput>,
+) {
   "use server";
   const session = await auth();
   assert(session?.user?.id, "Session not found");
   const world = await db?.world.create({
     data: {
-      ...worldData,
-      ownerId: session?.user?.id,
+      ...(worldData as Prisma.WorldCreateInput),
+      ownerId: worldData.ownerId ?? session?.user?.id,
       users: {
+        ...worldData.users,
         connect: {
+          ...worldData.users?.connect,
           id: session?.user?.id,
         },
       },
